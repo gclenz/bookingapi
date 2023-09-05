@@ -1,6 +1,8 @@
 package user
 
+import "context"
+
 type Repository interface {
-	Create(*User) error
-	FindByID(userID string) (*User, error)
+	Create(user *User, ctx context.Context) error
+	FindByID(userID string, ctx context.Context) (*User, error)
 }

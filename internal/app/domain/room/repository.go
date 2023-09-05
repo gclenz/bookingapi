@@ -1,6 +1,8 @@
 package room
 
+import "context"
+
 type Repository interface {
-	Create(room *Room) error
-	FindByID(roomID string) (*Room, error)
+	Create(room *Room, ctx context.Context) error
+	FindByID(roomID string, ctx context.Context) (*Room, error)
 }

@@ -1,6 +1,8 @@
 package room
 
 import (
+	"context"
+
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
 )
 
@@ -16,8 +18,9 @@ func (cr *CreateRoom) Execute(
 	doubleBedCount int,
 	guestsLimit int,
 	arePetsAllowed bool,
+	ctx context.Context,
 ) (*Room, error) {
-	u, err := cr.userRepository.FindByID(staffID)
+	u, err := cr.userRepository.FindByID(staffID, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +30,7 @@ func (cr *CreateRoom) Execute(
 	}
 
 	room := NewRoom(name, singleBedCount, doubleBedCount, guestsLimit, arePetsAllowed)
-	err = cr.repository.Create(room)
+	err = cr.repository.Create(room, ctx)
 	if err != nil {
 		return nil, ErrCreateRoom
 	}
