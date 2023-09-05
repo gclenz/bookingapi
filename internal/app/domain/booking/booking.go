@@ -8,8 +8,8 @@ import (
 
 type Booking struct {
 	ID         string    `json:"id"`
-	CustomerID string    `json:"customerId"`
 	RoomID     string    `json:"roomId"`
+	CustomerID string    `json:"customerId"`
 	Start      time.Time `json:"start"`
 	End        time.Time `json:"end"`
 	CreatedAt  time.Time `json:"createdAt"`
@@ -20,8 +20,8 @@ func NewBooking(customerID string, roomID string, start time.Time, end time.Time
 	now := time.Now()
 	return &Booking{
 		ID:         uuid.NewString(),
-		CustomerID: customerID,
 		RoomID:     roomID,
+		CustomerID: customerID,
 		Start:      start,
 		End:        end,
 		CreatedAt:  now,
@@ -32,8 +32,8 @@ func NewBooking(customerID string, roomID string, start time.Time, end time.Time
 func BuildBooking(id string, customerID string, roomID string, start time.Time, end time.Time, createdAt time.Time, updatedAt time.Time) *Booking {
 	return &Booking{
 		ID:         id,
-		CustomerID: customerID,
 		RoomID:     roomID,
+		CustomerID: customerID,
 		Start:      start,
 		End:        end,
 		CreatedAt:  createdAt,
