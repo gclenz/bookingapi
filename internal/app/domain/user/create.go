@@ -6,6 +6,12 @@ type CreateUser struct {
 	repository Repository
 }
 
+func NewCreateUser(repository Repository) *CreateUser {
+	return &CreateUser{
+		repository: repository,
+	}
+}
+
 func (cu *CreateUser) Execute(
 	firstName string,
 	lastName string,

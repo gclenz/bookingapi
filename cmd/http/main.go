@@ -1,14 +1,27 @@
 package main
 
 import (
+	"log/slog"
 	"net/http"
+	"os"
 
+	"github.com/gclenz/tinybookingapi/internal/app/infra/database"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/routers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		slog.Error("error loading environment variables:", err)
+		os.Exit(1)
+	}
+	db := database.GetDatabaseConnection()
+	userRouter := routers.NewUserRouter(db)
+
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -21,8 +34,6 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello world!"))
-	})
+	r.Mount("/users", userRouter)
 	http.ListenAndServe(":8080", r)
 }
