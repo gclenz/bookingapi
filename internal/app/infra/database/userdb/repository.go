@@ -28,7 +28,9 @@ func (ur *UserRepository) Create(user *user.User, ctx context.Context) error {
 		&user.Email,
 		&user.Phone,
 		&user.Document,
+		&user.DateOfBirth,
 		&user.Role,
+		&user.Password,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

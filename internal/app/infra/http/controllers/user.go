@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
 )
 
 type CreateUserRequest struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	Document  string `json:"document"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	Email       string    `json:"email"`
+	Phone       string    `json:"phone"`
+	Document    string    `json:"document"`
+	DateOfBirth time.Time `json:"dateOfBirth"`
+	Password    string    `json:"password"`
 }
 
 type UserController struct {
@@ -37,7 +40,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err = uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, ctx)
+	_, err = uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, u.Password, ctx)
 	if err != nil {
 		slog.Error("CreateUser error:", err)
 		w.WriteHeader(http.StatusBadRequest)

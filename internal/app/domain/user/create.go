@@ -1,6 +1,9 @@
 package user
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type CreateUser struct {
 	repository Repository
@@ -18,9 +21,11 @@ func (cu *CreateUser) Execute(
 	email string,
 	phone string,
 	document string,
+	dateOfBirth time.Time,
+	password string,
 	ctx context.Context,
 ) (*User, error) {
-	user := NewUser(firstName, lastName, email, phone, document)
+	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth, password)
 	err := cu.repository.Create(user, ctx)
 	if err != nil {
 		return nil, err
