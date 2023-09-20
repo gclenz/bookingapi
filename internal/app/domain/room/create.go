@@ -24,7 +24,7 @@ func (cr *CreateRoom) Execute(
 	singleBedCount int,
 	doubleBedCount int,
 	guestsLimit int,
-	arePetsAllowed bool,
+	petFriendly bool,
 	ctx context.Context,
 ) (*Room, error) {
 	u, err := cr.userRepository.FindByID(staffID, ctx)
@@ -36,7 +36,7 @@ func (cr *CreateRoom) Execute(
 		return nil, ErrStaffOnlyCreateRoom
 	}
 
-	room := NewRoom(name, singleBedCount, doubleBedCount, guestsLimit, arePetsAllowed)
+	room := NewRoom(name, singleBedCount, doubleBedCount, guestsLimit, petFriendly)
 	err = cr.repository.Create(room, ctx)
 	if err != nil {
 		return nil, ErrCreateRoom

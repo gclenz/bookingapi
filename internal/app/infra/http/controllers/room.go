@@ -15,7 +15,7 @@ type CreateRoomRequest struct {
 	SingleBedCount int    `json:"singleBedCount"`
 	DoubleBedCount int    `json:"doubleBedCount"`
 	GuestsLimit    int    `json:"guestsLimit"`
-	ArePetsAllowed bool   `json:"arePetsAllowed"`
+	PetFriendly    bool   `json:"petFriendly"`
 }
 
 type RoomController struct {
@@ -54,7 +54,7 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		roomReq.SingleBedCount,
 		roomReq.DoubleBedCount,
 		roomReq.GuestsLimit,
-		roomReq.ArePetsAllowed,
+		roomReq.PetFriendly,
 		ctx,
 	)
 	if err != nil {

@@ -28,7 +28,7 @@ func (rr *RoomRepository) Create(room *room.Room, ctx context.Context) error {
 		&room.SingleBedCount,
 		&room.DoubleBedCount,
 		&room.GuestsLimit,
-		&room.ArePetsAllowed,
+		&room.PetFriendly,
 		&room.CreatedAt,
 		&room.UpdatedAt,
 	)

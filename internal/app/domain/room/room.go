@@ -12,7 +12,7 @@ type Room struct {
 	SingleBedCount int       `json:"singleBedCount"`
 	DoubleBedCount int       `json:"doubleBedCount"`
 	GuestsLimit    int       `json:"guestsLimit"`
-	ArePetsAllowed bool      `json:"arePetsAllowed"`
+	PetFriendly    bool      `json:"petFriendly"`
 	CreatedAt      time.Time `json:"createdAt"`
 	UpdatedAt      time.Time `json:"updatedAt"`
 }
@@ -22,7 +22,7 @@ func NewRoom(
 	singleBedCount int,
 	doubleBedCount int,
 	guestsLimit int,
-	arePetsAllowed bool,
+	petFriendly bool,
 ) *Room {
 	now := time.Now()
 	return &Room{
@@ -31,7 +31,7 @@ func NewRoom(
 		SingleBedCount: singleBedCount,
 		DoubleBedCount: doubleBedCount,
 		GuestsLimit:    guestsLimit,
-		ArePetsAllowed: arePetsAllowed,
+		PetFriendly:    petFriendly,
 		CreatedAt:      now,
 		UpdatedAt:      now,
 	}
@@ -43,7 +43,7 @@ func BuildRoom(
 	singleBedCount int,
 	doubleBedCount int,
 	guestsLimit int,
-	arePetsAllowed bool,
+	petFriendly bool,
 	createdAt time.Time,
 	updatedAt time.Time,
 ) *Room {
@@ -53,7 +53,7 @@ func BuildRoom(
 		SingleBedCount: singleBedCount,
 		DoubleBedCount: doubleBedCount,
 		GuestsLimit:    guestsLimit,
-		ArePetsAllowed: arePetsAllowed,
+		PetFriendly:    petFriendly,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,
 	}
