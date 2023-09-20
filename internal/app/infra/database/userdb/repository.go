@@ -3,6 +3,7 @@ package userdb
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
 )
@@ -36,6 +37,7 @@ func (ur *UserRepository) Create(user *user.User, ctx context.Context) error {
 	)
 
 	if err != nil {
+		slog.Error("UserRepository(Create) error:", err)
 		return err
 	}
 
@@ -51,14 +53,28 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 	)
 	err := row.Err()
 	if err != nil {
+		slog.Error("UserRepository(FindByID) error:", err)
 		return nil, err
 	}
 
-	var user *user.User
-	err = row.Scan(user)
+	var user user.User
+	err = row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Phone,
+		&user.Document,
+		&user.DateOfBirth,
+		&user.Role,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 	if err != nil {
+		slog.Error("UserRepository(FindByID) error:", err)
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }

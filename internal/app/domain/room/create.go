@@ -11,6 +11,13 @@ type CreateRoom struct {
 	userRepository user.Repository
 }
 
+func NewCreateRoom(repo Repository, ur user.Repository) *CreateRoom {
+	return &CreateRoom{
+		repository:     repo,
+		userRepository: ur,
+	}
+}
+
 func (cr *CreateRoom) Execute(
 	staffID string,
 	name string,

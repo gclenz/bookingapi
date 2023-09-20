@@ -3,6 +3,7 @@ package roomdb
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/room"
 )
@@ -11,7 +12,7 @@ type RoomRepository struct {
 	db *sql.DB
 }
 
-func (rr *RoomRepository) NewRoomRepository(db *sql.DB) room.Repository {
+func NewRoomRepository(db *sql.DB) room.Repository {
 	return &RoomRepository{
 		db: db,
 	}
@@ -33,6 +34,7 @@ func (rr *RoomRepository) Create(room *room.Room, ctx context.Context) error {
 	)
 
 	if err != nil {
+		slog.Error("RoomRepository(Create) error:", err)
 		return err
 	}
 
@@ -48,6 +50,7 @@ func (rr *RoomRepository) FindByID(roomID string, ctx context.Context) (*room.Ro
 	)
 	err := row.Err()
 	if err != nil {
+		slog.Error("RoomRepository(FindByID) error:", err)
 		return nil, err
 	}
 
@@ -55,6 +58,7 @@ func (rr *RoomRepository) FindByID(roomID string, ctx context.Context) (*room.Ro
 
 	err = row.Scan(room)
 	if err != nil {
+		slog.Error("RoomRepository(FindByID) error:", err)
 		return nil, err
 	}
 

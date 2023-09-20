@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gclenz/tinybookingapi/internal/app/infra/database"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/middlewares"
 	"github.com/gclenz/tinybookingapi/internal/app/infra/http/routers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,6 +24,7 @@ func main() {
 	}
 	db := database.GetDatabaseConnection()
 	userRouter := routers.NewUserRouter(db)
+	roomRouter := routers.NewRoomRouter(db)
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
@@ -34,6 +38,9 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	r.Use(middleware.Logger)
+	r.Use(middlewares.Authentication)
 	r.Mount("/users", userRouter)
+	r.Mount("/rooms", roomRouter)
+	fmt.Printf("Server started at: %v", time.Now().UTC())
 	http.ListenAndServe(":8080", r)
 }
