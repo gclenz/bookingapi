@@ -14,13 +14,30 @@ type CreateBooking struct {
 	userRepository user.Repository
 }
 
+func NewCreateBooking(repo Repository, rr room.Repository, ur user.Repository) *CreateBooking {
+	return &CreateBooking{
+		repository:     repo,
+		roomRepository: rr,
+		userRepository: ur,
+	}
+}
+
 func (cb *CreateBooking) Execute(
 	customerID string,
 	roomID string,
-	start time.Time,
-	end time.Time,
+	startOn time.Time,
+	endOn time.Time,
 	ctx context.Context,
 ) (*Booking, error) {
+	if endOn.Before(startOn) {
+		return nil, ErrEndDateBeforeStartAtDate
+	}
+
+	now := time.Now()
+	if startOn.Before(now) {
+		return nil, ErrBookingInThePast
+	}
+
 	_, err := cb.roomRepository.FindByID(roomID, ctx)
 	if err != nil {
 		return nil, room.ErrRoomNotFound
@@ -31,7 +48,7 @@ func (cb *CreateBooking) Execute(
 		return nil, user.ErrUserNotFound
 	}
 
-	booking := NewBooking(customerID, roomID, start, end)
+	booking := NewBooking(customerID, roomID, startOn, endOn)
 	overlappingBookings, err := cb.repository.CheckForOverlappingBooking(booking, ctx)
 	if err != nil {
 		return nil, err

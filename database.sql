@@ -24,3 +24,14 @@ create table if not exists rooms (
   updated_at timestamp default(now()) not null
 );
 -- drop table rooms
+
+create table if not exists bookings (
+	id uuid primary key default(gen_random_uuid()) not null,
+  room_id uuid references rooms(id) not null,
+  customer_id uuid references users(id) not null,
+  start_on timestamp not null,
+  end_on timestamp not null,
+  created_at timestamp default(now()) not null,
+  updated_at timestamp default(now()) not null
+);
+-- drop table bookings

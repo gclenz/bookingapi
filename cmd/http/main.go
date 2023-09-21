@@ -25,6 +25,7 @@ func main() {
 	db := database.GetDatabaseConnection()
 	userRouter := routers.NewUserRouter(db)
 	roomRouter := routers.NewRoomRouter(db)
+	bookingRouter := routers.NewBookingRouter(db)
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
@@ -41,6 +42,7 @@ func main() {
 	r.Use(middlewares.Authentication)
 	r.Mount("/users", userRouter)
 	r.Mount("/rooms", roomRouter)
-	fmt.Printf("Server started at: %v", time.Now().UTC())
+	r.Mount("/bookings", bookingRouter)
+	fmt.Printf("Server startAted at: %v", time.Now().UTC())
 	http.ListenAndServe(":8080", r)
 }
