@@ -3,6 +3,7 @@ package bookingdb
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/booking"
 )
@@ -11,7 +12,7 @@ type BookingRepository struct {
 	db *sql.DB
 }
 
-func (br *BookingRepository) NewBookingRepository(db *sql.DB) booking.Repository {
+func NewBookingRepository(db *sql.DB) booking.Repository {
 	return &BookingRepository{
 		db: db,
 	}
@@ -24,13 +25,14 @@ func (br *BookingRepository) Create(booking *booking.Booking, ctx context.Contex
 		&booking.ID,
 		&booking.RoomID,
 		&booking.CustomerID,
-		&booking.Start,
-		&booking.End,
+		&booking.StartOn,
+		&booking.EndOn,
 		&booking.CreatedAt,
 		&booking.UpdatedAt,
 	)
 
 	if err != nil {
+		slog.Error("BookingRepository(Create) error:", err)
 		return err
 	}
 
@@ -38,8 +40,9 @@ func (br *BookingRepository) Create(booking *booking.Booking, ctx context.Contex
 }
 
 func (br *BookingRepository) CheckForOverlappingBooking(bk *booking.Booking, ctx context.Context) ([]*booking.Booking, error) {
-	rows, err := br.db.QueryContext(ctx, SelectOverlappingBookingQuery, &bk.RoomID, &bk.Start, &bk.End)
+	rows, err := br.db.QueryContext(ctx, SelectOverlappingBookingQuery, &bk.RoomID, &bk.StartOn, &bk.EndOn)
 	if err != nil {
+		slog.Error("BookingRepository(CheckForOverlappingBooking) error:", err)
 		return nil, err
 	}
 
@@ -48,6 +51,7 @@ func (br *BookingRepository) CheckForOverlappingBooking(bk *booking.Booking, ctx
 	}()
 
 	if rows.Err() != nil {
+		slog.Error("BookingRepository(CheckForOverlappingBooking) error:", err)
 		return nil, err
 	}
 
@@ -55,8 +59,17 @@ func (br *BookingRepository) CheckForOverlappingBooking(bk *booking.Booking, ctx
 
 	for rows.Next() {
 		var bkg booking.Booking
-		err := rows.Scan(&bkg)
+		err := rows.Scan(
+			&bkg.ID,
+			&bkg.RoomID,
+			&bkg.CustomerID,
+			&bkg.StartOn,
+			&bkg.EndOn,
+			&bkg.CreatedAt,
+			&bkg.UpdatedAt,
+		)
 		if err != nil {
+			slog.Error("BookingRepository(CheckForOverlappingBooking) error:", err)
 			return nil, err
 		}
 
@@ -73,6 +86,7 @@ func (br *BookingRepository) FindBookingsByRoomID(roomID string, ctx context.Con
 		roomID,
 	)
 	if err != nil {
+		slog.Error("BookingRepository(FindBookingsByRoomID) error:", err)
 		return nil, err
 	}
 
@@ -81,6 +95,7 @@ func (br *BookingRepository) FindBookingsByRoomID(roomID string, ctx context.Con
 	}()
 
 	if rows.Err() != nil {
+		slog.Error("BookingRepository(FindBookingsByRoomID) error:", err)
 		return nil, err
 	}
 
@@ -88,8 +103,17 @@ func (br *BookingRepository) FindBookingsByRoomID(roomID string, ctx context.Con
 
 	for rows.Next() {
 		var bkg booking.Booking
-		err := rows.Scan(&bkg)
+		err := rows.Scan(
+			&bkg.ID,
+			&bkg.RoomID,
+			&bkg.CustomerID,
+			&bkg.StartOn,
+			&bkg.EndOn,
+			&bkg.CreatedAt,
+			&bkg.UpdatedAt,
+		)
 		if err != nil {
+			slog.Error("BookingRepository(FindBookingsByRoomID) error:", err)
 			return nil, err
 		}
 
@@ -106,6 +130,7 @@ func (br *BookingRepository) FindBookingsByCustomerID(customerID string, ctx con
 		customerID,
 	)
 	if err != nil {
+		slog.Error("BookingRepository(FindBookingsByCustomerID) error:", err)
 		return nil, err
 	}
 
@@ -114,6 +139,7 @@ func (br *BookingRepository) FindBookingsByCustomerID(customerID string, ctx con
 	}()
 
 	if rows.Err() != nil {
+		slog.Error("BookingRepository(FindBookingsByCustomerID) error:", err)
 		return nil, err
 	}
 
@@ -121,8 +147,17 @@ func (br *BookingRepository) FindBookingsByCustomerID(customerID string, ctx con
 
 	for rows.Next() {
 		var bkg booking.Booking
-		err := rows.Scan(&bkg)
+		err := rows.Scan(
+			&bkg.ID,
+			&bkg.RoomID,
+			&bkg.CustomerID,
+			&bkg.StartOn,
+			&bkg.EndOn,
+			&bkg.CreatedAt,
+			&bkg.UpdatedAt,
+		)
 		if err != nil {
+			slog.Error("BookingRepository(FindBookingsByCustomerID) error:", err)
 			return nil, err
 		}
 

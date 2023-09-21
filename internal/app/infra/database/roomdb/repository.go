@@ -54,13 +54,22 @@ func (rr *RoomRepository) FindByID(roomID string, ctx context.Context) (*room.Ro
 		return nil, err
 	}
 
-	var room *room.Room
+	var room room.Room
 
-	err = row.Scan(room)
+	err = row.Scan(
+		&room.ID,
+		&room.Name,
+		&room.SingleBedCount,
+		&room.DoubleBedCount,
+		&room.GuestsLimit,
+		&room.PetFriendly,
+		&room.CreatedAt,
+		&room.UpdatedAt,
+	)
 	if err != nil {
 		slog.Error("RoomRepository(FindByID) error:", err)
 		return nil, err
 	}
 
-	return room, nil
+	return &room, nil
 }
