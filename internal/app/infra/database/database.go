@@ -15,7 +15,7 @@ func GetDatabaseConnection() *sql.DB {
 		os.Exit(1)
 	}
 
-	db.Ping()
+	err = db.Ping()
 	if err != nil {
 		slog.Error("Unable to ping databse: %v", err)
 		os.Exit(1)
