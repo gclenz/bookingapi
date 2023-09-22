@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/utils"
 )
 
 type CreateUserRequest struct {
@@ -27,14 +28,18 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		_ = r.Body.Close()
 	}()
 
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
 	var u CreateUserRequest
-	err := dec.Decode(&u)
+	err := utils.ParseJSON(&u, w, r)
 	if err != nil {
+		w.Header().Add("Content-Type", "application/json")
+		var mr *utils.MalformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.Message, mr.Status)
+			return
+		}
 		slog.Error("CreateUser error:", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"message": "Something went wrong.`))
 		return
 	}
 

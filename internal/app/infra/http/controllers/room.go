@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/room"
 	"github.com/gclenz/tinybookingapi/internal/app/infra/http/middlewares"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/utils"
 )
 
 type CreateRoomRequest struct {
@@ -29,13 +29,17 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	var roomReq CreateRoomRequest
 
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
-	err := dec.Decode(&roomReq)
+	err := utils.ParseJSON(&roomReq, w, r)
 	if err != nil {
+		w.Header().Add("Content-Type", "application/json")
+		var mr *utils.MalformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.Message, mr.Status)
+			return
+		}
 		slog.Error("CreateRoom error:", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"message": "Something went wrong.`))
 		return
 	}
 

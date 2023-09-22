@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/booking"
 	"github.com/gclenz/tinybookingapi/internal/app/infra/http/middlewares"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/utils"
 )
 
 type CreateBookingRequest struct {
@@ -27,13 +27,17 @@ func (bc *BookingController) CreateBooking(w http.ResponseWriter, r *http.Reques
 
 	var bookingData CreateBookingRequest
 
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-
-	err := decoder.Decode(&bookingData)
+	err := utils.ParseJSON(&bookingData, w, r)
 	if err != nil {
-		slog.Error("BookingController(Create) error: ", err)
+		w.Header().Add("Content-Type", "application/json")
+		var mr *utils.MalformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.Message, mr.Status)
+			return
+		}
+		slog.Error("CreateBooking error:", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"message": "Something went wrong.`))
 		return
 	}
 
