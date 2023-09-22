@@ -20,7 +20,6 @@ type User struct {
 	Document    string    `json:"document"`
 	DateOfBirth time.Time `json:"dateOfBirth"`
 	Role        string    `json:"role"`
-	Password    string    `json:"password,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
@@ -32,7 +31,6 @@ func NewUser(
 	phone string,
 	document string,
 	dateOfBirth time.Time,
-	password string,
 ) *User {
 	now := time.Now()
 	return &User{
@@ -44,7 +42,6 @@ func NewUser(
 		Document:    document,
 		DateOfBirth: dateOfBirth,
 		Role:        CustomerRole,
-		Password:    password,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}
@@ -59,7 +56,6 @@ func BuildUser(
 	document string,
 	dateOfBirth time.Time,
 	role string,
-	password string,
 	createdAt time.Time,
 	updateAt time.Time,
 ) *User {
@@ -72,7 +68,6 @@ func BuildUser(
 		Document:    document,
 		DateOfBirth: dateOfBirth,
 		Role:        role,
-		Password:    password,
 		CreatedAt:   createdAt,
 		UpdatedAt:   updateAt,
 	}

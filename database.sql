@@ -7,7 +7,6 @@ create table if not exists users (
   document varchar(14) unique not null,
   date_of_birth date not null,
   role varchar(15) not null,
-  password varchar(255) not null,
   created_at timestamp default(now()) not null,
   updated_at timestamp default(now()) not null
 );
