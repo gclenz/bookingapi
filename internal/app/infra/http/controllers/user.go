@@ -16,7 +16,6 @@ type CreateUserRequest struct {
 	Phone       string    `json:"phone"`
 	Document    string    `json:"document"`
 	DateOfBirth time.Time `json:"dateOfBirth"`
-	Password    string    `json:"password"`
 }
 
 type UserController struct {
@@ -40,7 +39,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err = uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, u.Password, ctx)
+	_, err = uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, ctx)
 	if err != nil {
 		slog.Error("CreateUser error:", err)
 		w.WriteHeader(http.StatusBadRequest)

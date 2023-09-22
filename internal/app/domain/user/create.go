@@ -22,10 +22,9 @@ func (cu *CreateUser) Execute(
 	phone string,
 	document string,
 	dateOfBirth time.Time,
-	password string,
 	ctx context.Context,
 ) (*User, error) {
-	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth, password)
+	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth)
 	err := cu.repository.Create(user, ctx)
 	if err != nil {
 		return nil, err

@@ -31,7 +31,6 @@ func (ur *UserRepository) Create(user *user.User, ctx context.Context) error {
 		&user.Document,
 		&user.DateOfBirth,
 		&user.Role,
-		&user.Password,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -67,7 +66,6 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 		&user.Document,
 		&user.DateOfBirth,
 		&user.Role,
-		&user.Password,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
