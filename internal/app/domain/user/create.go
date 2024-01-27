@@ -24,6 +24,9 @@ func (cu *CreateUser) Execute(
 	dateOfBirth time.Time,
 	ctx context.Context,
 ) (*User, error) {
+	if firstName == "" || lastName == "" || email == "" || phone == "" || document == "" {
+		return nil, ErrMissingData
+	}
 	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth)
 	err := cu.repository.Create(user, ctx)
 	if err != nil {
