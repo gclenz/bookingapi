@@ -29,19 +29,7 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	var roomReq CreateRoomRequest
 
-	err := utils.ParseJSON(&roomReq, w, r)
-	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		var mr *utils.MalformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.Message, mr.Status)
-			return
-		}
-		slog.Error("CreateRoom error:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message": "Something went wrong.`))
-		return
-	}
+	utils.ParseJSON(&roomReq, w, r)
 
 	ctx := r.Context()
 	userID, ok := ctx.Value(middlewares.ContextUserID).(string)
@@ -52,7 +40,7 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = rc.createRoom.Execute(
+	_, err := rc.createRoom.Execute(
 		userID,
 		roomReq.Name,
 		roomReq.SingleBedCount,

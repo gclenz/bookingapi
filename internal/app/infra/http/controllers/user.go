@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -29,24 +30,22 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	var u CreateUserRequest
-	err := utils.ParseJSON(&u, w, r)
-	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		var mr *utils.MalformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.Message, mr.Status)
-			return
-		}
-		slog.Error("CreateUser error:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message": "Something went wrong.`))
-		return
-	}
+
+	utils.ParseJSON(&u, w, r)
 
 	ctx := r.Context()
-	_, err = uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, ctx)
+	_, err := uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, ctx)
 	if err != nil {
 		slog.Error("CreateUser error:", err)
+		switch {
+		case errors.Is(user.ErrMissingData, err),
+			errors.Is(user.ErrCreateUser, err),
+			errors.Is(user.ErrDuplicatedKey, err):
+			w.WriteHeader(http.StatusBadRequest)
+			w.Header().Add("Content-Type", "application/json")
+			w.Write([]byte(fmt.Sprintf(`{"message": "%s."}`, err)))
+			return
+		}
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(`{"message": "Something went wrong. The document, email, and phone are valid for just one account."}`))

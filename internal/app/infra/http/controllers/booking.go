@@ -27,19 +27,7 @@ func (bc *BookingController) CreateBooking(w http.ResponseWriter, r *http.Reques
 
 	var bookingData CreateBookingRequest
 
-	err := utils.ParseJSON(&bookingData, w, r)
-	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		var mr *utils.MalformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.Message, mr.Status)
-			return
-		}
-		slog.Error("CreateBooking error:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"message": "Something went wrong.`))
-		return
-	}
+	utils.ParseJSON(&bookingData, w, r)
 
 	ctx := r.Context()
 	userID, ok := ctx.Value(middlewares.ContextUserID).(string)
@@ -48,7 +36,7 @@ func (bc *BookingController) CreateBooking(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	_, err = bc.createBooking.Execute(userID, bookingData.RoomID, bookingData.StartOn, bookingData.EndOn, ctx)
+	_, err := bc.createBooking.Execute(userID, bookingData.RoomID, bookingData.StartOn, bookingData.EndOn, ctx)
 	if err != nil {
 		slog.Info(err.Error())
 		switch {
