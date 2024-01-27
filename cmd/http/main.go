@@ -39,10 +39,17 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	r.Use(middleware.Logger)
-	r.Use(middlewares.Authentication)
 	r.Mount("/users", userRouter)
-	r.Mount("/rooms", roomRouter)
-	r.Mount("/bookings", bookingRouter)
-	fmt.Printf("Server startAted at: %v", time.Now().UTC())
-	http.ListenAndServe(":8080", r)
+	r.Group(func(r chi.Router) {
+		r.Use(middlewares.Authentication)
+		r.Mount("/rooms", roomRouter)
+		r.Mount("/bookings", bookingRouter)
+	})
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":8080"
+	}
+	fmt.Printf("Server started at: %v\n", time.Now().UTC())
+	http.ListenAndServe(port, r)
 }
