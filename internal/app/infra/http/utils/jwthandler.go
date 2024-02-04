@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -47,7 +46,6 @@ func (jh *JWTHandler) VerifyJWT(tokenString string) (string, error) {
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		exp := time.Unix(int64(claims["exp"].(float64)), 0)
-		fmt.Println(exp.UTC(), time.Now().UTC())
 		if exp.UTC().Before(time.Now().UTC()) {
 			return "", ErrExpiredToken
 		}
