@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
@@ -20,8 +21,20 @@ type CreateUserRequest struct {
 	DateOfBirth time.Time `json:"dateOfBirth"`
 }
 
+type AuthenticateUserRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+type RequestAuthenticationCodeRequest struct {
+	Email string `json:"email"`
+}
+
 type UserController struct {
-	createUser *user.CreateUser
+	createUser                *user.Create
+	authenticate              *user.Authenticate
+	requestAuthenticationCode *user.RequestAuthenticationCode
+	jwtHandler                utils.IJWTHandler
 }
 
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -55,8 +68,66 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func NewCreateUserController(createUser *user.CreateUser) *UserController {
+func (uc *UserController) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
+	var u AuthenticateUserRequest
+	utils.ParseJSON(&u, w, r)
+
+	ctx := r.Context()
+	token, err := uc.authenticate.Execute(u.Email, u.Code, ctx)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	cookie := http.Cookie{
+		MaxAge:   3600,
+		HttpOnly: true,
+		Secure:   os.Getenv("GO_ENV") == "production",
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
+		Name:     "access_token",
+		Value:    fmt.Sprintf("Bearer %s", token),
+	}
+
+	http.SetCookie(w, &cookie)
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (uc *UserController) RequestAuthenticationCode(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
+	var rac RequestAuthenticationCodeRequest
+	utils.ParseJSON(&rac, w, r)
+
+	ctx := r.Context()
+	err := uc.requestAuthenticationCode.Execute(rac.Email, ctx)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func NewUserController(
+	createUser *user.Create,
+	requestAuthenticationCode *user.RequestAuthenticationCode,
+	authenticate *user.Authenticate,
+	jwtHandler utils.IJWTHandler,
+) *UserController {
 	return &UserController{
-		createUser: createUser,
+		createUser:                createUser,
+		authenticate:              authenticate,
+		requestAuthenticationCode: requestAuthenticationCode,
+		jwtHandler:                jwtHandler,
 	}
 }

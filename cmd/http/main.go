@@ -10,6 +10,7 @@ import (
 	"github.com/gclenz/tinybookingapi/internal/app/infra/database"
 	"github.com/gclenz/tinybookingapi/internal/app/infra/http/middlewares"
 	"github.com/gclenz/tinybookingapi/internal/app/infra/http/routers"
+	"github.com/gclenz/tinybookingapi/internal/app/infra/http/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -26,8 +27,14 @@ func main() {
 	userRouter := routers.NewUserRouter(db)
 	roomRouter := routers.NewRoomRouter(db)
 	bookingRouter := routers.NewBookingRouter(db)
+	healthRouter := routers.NewHealthRouter()
+
+	authMiddleware := middlewares.NewAuthentication(&utils.JWTHandler{
+		Secret: os.Getenv("JWT_SECRET"),
+	})
 
 	r := chi.NewRouter()
+	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		AllowedOrigins: []string{"https://*", "http://*"},
@@ -40,8 +47,9 @@ func main() {
 	}))
 	r.Use(middleware.Logger)
 	r.Mount("/users", userRouter)
+	r.Mount("/health", healthRouter)
 	r.Group(func(r chi.Router) {
-		r.Use(middlewares.Authentication)
+		r.Use(authMiddleware.Execute)
 		r.Mount("/rooms", roomRouter)
 		r.Mount("/bookings", bookingRouter)
 	})
