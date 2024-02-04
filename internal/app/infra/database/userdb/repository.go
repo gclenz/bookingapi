@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/gclenz/tinybookingapi/internal/app/domain/user"
 )
@@ -70,6 +71,8 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 		&user.Document,
 		&user.DateOfBirth,
 		&user.Role,
+		&user.Code,
+		&user.CodeExpiration,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -79,4 +82,58 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 	}
 
 	return &user, nil
+}
+
+// FindByEmail implements user.Repository.
+func (ur *UserRepository) FindByEmail(email string, ctx context.Context) (*user.User, error) {
+	row := ur.db.QueryRowContext(
+		ctx,
+		SelectUserByEmailQuery,
+		email,
+	)
+	err := row.Err()
+	if err != nil {
+		slog.Error("UserRepository(FindByEmail) error:", err)
+		return nil, err
+	}
+
+	var user user.User
+	err = row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Phone,
+		&user.Document,
+		&user.DateOfBirth,
+		&user.Role,
+		&user.Code,
+		&user.CodeExpiration,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		slog.Error("UserRepository(FindByEmail) error:", err)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// UpdateCode implements user.Repository.
+func (ur *UserRepository) UpdateCode(email string, code string, codeExpiration time.Time, ctx context.Context) error {
+	_, err := ur.db.ExecContext(
+		ctx,
+		UpdateUserCodeQuery,
+		code,
+		codeExpiration,
+		email,
+	)
+
+	if err != nil {
+		slog.Error("UserRepository(UpdateCode) error:", err)
+		return err
+	}
+
+	return nil
 }

@@ -5,17 +5,17 @@ import (
 	"time"
 )
 
-type CreateUser struct {
+type Create struct {
 	repository Repository
 }
 
-func NewCreateUser(repository Repository) *CreateUser {
-	return &CreateUser{
+func NewCreate(repository Repository) *Create {
+	return &Create{
 		repository: repository,
 	}
 }
 
-func (cu *CreateUser) Execute(
+func (cu *Create) Execute(
 	firstName string,
 	lastName string,
 	email string,
@@ -27,7 +27,8 @@ func (cu *CreateUser) Execute(
 	if firstName == "" || lastName == "" || email == "" || phone == "" || document == "" {
 		return nil, ErrMissingData
 	}
-	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth)
+	code := "------"
+	user := NewUser(firstName, lastName, email, phone, document, dateOfBirth, code)
 	err := cu.repository.Create(user, ctx)
 	if err != nil {
 		return nil, err

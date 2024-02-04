@@ -13,4 +13,10 @@ var (
 	ErrMissingData = errors.New(
 		"you should provide the following data to create an user: first name, last name, email, phone, document, and date of birth",
 	)
+	ErrInvalidCode = errors.New(
+		"the provided code is not valid",
+	)
+	ErrExpiredCode = errors.New(
+		"the provided code is expired",
+	)
 )
