@@ -21,6 +21,7 @@ create table if not exists rooms (
   double_bed_count integer not null,
   guests_limit integer not null,
   pet_friendly boolean not null,
+  daily_price decimal(10,2) not null,
   created_at timestamp default(now()) not null,
   updated_at timestamp default(now()) not null
 );
@@ -36,3 +37,26 @@ create table if not exists bookings (
   updated_at timestamp default(now()) not null
 );
 -- drop table bookings
+
+create table if not exists coupons (
+	id uuid primary key default(gen_random_uuid()) not null,
+  category varchar(10) not null,
+  value decimal(10,2) not null,
+  expires_in timestamp null,
+  created_at timestamp default(now()) not null,
+  updated_at timestamp default(now()) not null
+);
+-- drop table coupons
+
+create table if not exists payments (
+	id uuid primary key default(gen_random_uuid()) not null,
+  external_id varchar(50) not null,
+  booking_id uuid references bookings(id) not null,
+  coupon_id uuid references coupons(id),
+  gross_amount decimal(10,2) not null,
+  net_amount decimal(10,2) not null,
+  status varchar(50) not null,
+  created_at timestamp default(now()) not null,
+  updated_at timestamp default(now()) not null
+);
+-- drop table payments
