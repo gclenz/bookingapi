@@ -8,32 +8,32 @@ import (
 
 type Coupon struct {
 	ID        string    `json:"id"`
-	Category  string    `json:"category"`
+	Code      string    `json:"code"`
+	Mode      string    `json:"mode"`
 	Value     float64   `json:"grossAmount"`
-	ExpiresIn time.Time `json:"expiresIn"`
+	ExpiresAt time.Time `json:"expiresAt"`
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func NewCoupon(category string, value float64, expiresIn time.Time) *Coupon {
+func NewCoupon(code, mode string, value float64, expiresAt time.Time) *Coupon {
 	now := time.Now()
 	return &Coupon{
 		ID:        uuid.NewString(),
-		Category:  category,
+		Code:      code,
+		Mode:      mode,
 		Value:     value,
-		ExpiresIn: expiresIn,
+		ExpiresAt: expiresAt,
 		CreatedAt: now,
-		UpdatedAt: now,
 	}
 }
 
-func BuildCoupon(id, category string, value float64, expiresIn, createdAt, updatedAt time.Time) *Coupon {
+func BuildCoupon(id, code, mode string, value float64, expiresAt, createdAt time.Time) *Coupon {
 	return &Coupon{
 		ID:        id,
-		Category:  category,
+		Code:      code,
+		Mode:      mode,
 		Value:     value,
-		ExpiresIn: expiresIn,
+		ExpiresAt: expiresAt,
 		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
 	}
 }
