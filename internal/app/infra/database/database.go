@@ -11,13 +11,13 @@ import (
 func GetDatabaseConnection() *sql.DB {
 	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		slog.Error("Unable to connect to databse: %v", err)
+		slog.Error("Unable to connect to databse", "error", err)
 		os.Exit(1)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		slog.Error("Unable to ping databse: %v", err)
+		slog.Error("Unable to ping databse", "error", err)
 		os.Exit(1)
 	}
 

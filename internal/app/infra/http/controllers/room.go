@@ -33,9 +33,9 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	userID, ok := ctx.Value(middlewares.ContextUserID).(string)
-	slog.Info("userID", userID)
+	slog.Debug("userID", "userID", userID)
 	if !ok {
-		slog.Error("userID not found on context", userID)
+		slog.Error("userID not found on context", "userID", userID)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -50,9 +50,9 @@ func (rc *RoomController) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		ctx,
 	)
 	if err != nil {
-		slog.Error("CreateRoom error:", err)
+		slog.Error("RoomController(CreateRoom)", "error", err)
 		switch {
-		case errors.Is(room.ErrStaffOnlyCreateRoom, err):
+		case errors.Is(err, room.ErrStaffOnlyCreateRoom):
 			w.WriteHeader(http.StatusForbidden)
 			return
 		default:

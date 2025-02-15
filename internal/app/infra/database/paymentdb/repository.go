@@ -36,7 +36,7 @@ func (pr *PaymentRepository) Create(payment *payment.Payment, ctx context.Contex
 	)
 
 	if err != nil {
-		slog.Error("PaymentRepository(Create) error:", err)
+		slog.Error("PaymentRepository(Create)", "error", err)
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (pr *PaymentRepository) FindByID(paymentID string, ctx context.Context) (*p
 	)
 	err := row.Err()
 	if err != nil {
-		slog.Error("PaymentRepository(FindByID) error:", err)
+		slog.Error("PaymentRepository(FindByID)", "error", err)
 		return nil, err
 	}
 
@@ -70,7 +70,7 @@ func (pr *PaymentRepository) FindByID(paymentID string, ctx context.Context) (*p
 		&payment.UpdatedAt,
 	)
 	if err != nil {
-		slog.Error("PaymentRepository(FindByID) error:", err)
+		slog.Error("PaymentRepository(FindByID)", "error", err)
 		return nil, err
 	}
 

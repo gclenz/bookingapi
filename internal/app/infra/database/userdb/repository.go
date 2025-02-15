@@ -38,7 +38,7 @@ func (ur *UserRepository) Create(usr *user.User, ctx context.Context) error {
 	)
 
 	if err != nil {
-		slog.Error("UserRepository(Create) error:", err)
+		slog.Error("UserRepository(Create)", "error", err)
 		if strings.Contains(err.Error(), "duplicate key") {
 			return user.ErrDuplicatedKey
 		}
@@ -57,7 +57,7 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 	)
 	err := row.Err()
 	if err != nil {
-		slog.Error("UserRepository(FindByID) error:", err)
+		slog.Error("UserRepository(FindByID)", "error", err)
 		return nil, err
 	}
 
@@ -77,7 +77,7 @@ func (ur *UserRepository) FindByID(userID string, ctx context.Context) (*user.Us
 		&user.UpdatedAt,
 	)
 	if err != nil {
-		slog.Error("UserRepository(FindByID) error:", err)
+		slog.Error("UserRepository(FindByID)", "error", err)
 		return nil, err
 	}
 
@@ -93,7 +93,7 @@ func (ur *UserRepository) FindByEmail(email string, ctx context.Context) (*user.
 	)
 	err := row.Err()
 	if err != nil {
-		slog.Error("UserRepository(FindByEmail) error:", err)
+		slog.Error("UserRepository(FindByEmail)", "error", err)
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func (ur *UserRepository) FindByEmail(email string, ctx context.Context) (*user.
 		&user.UpdatedAt,
 	)
 	if err != nil {
-		slog.Error("UserRepository(FindByEmail) error:", err)
+		slog.Error("UserRepository(FindByEmail)", "error", err)
 		return nil, err
 	}
 
@@ -131,7 +131,7 @@ func (ur *UserRepository) UpdateCode(email string, code string, codeExpiration t
 	)
 
 	if err != nil {
-		slog.Error("UserRepository(UpdateCode) error:", err)
+		slog.Error("UserRepository(UpdateCode)", "error", err)
 		return err
 	}
 

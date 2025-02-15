@@ -18,9 +18,12 @@ import (
 )
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
 	err := godotenv.Load(".env")
 	if err != nil {
-		slog.Error("error loading environment variables:", err)
+		slog.Error("failed to load environment variables", "error", err)
 		os.Exit(1)
 	}
 	db := database.GetDatabaseConnection()

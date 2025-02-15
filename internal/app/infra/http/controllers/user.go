@@ -49,11 +49,11 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	_, err := uc.createUser.Execute(u.FirstName, u.LastName, u.Email, u.Phone, u.Document, u.DateOfBirth, ctx)
 	if err != nil {
-		slog.Error("CreateUser error:", err)
+		slog.Error("UserController(CreateUser)", "error", err)
 		switch {
-		case errors.Is(user.ErrMissingData, err),
-			errors.Is(user.ErrCreateUser, err),
-			errors.Is(user.ErrDuplicatedKey, err):
+		case errors.Is(err, user.ErrMissingData),
+			errors.Is(err, user.ErrCreateUser),
+			errors.Is(err, user.ErrDuplicatedKey):
 			w.WriteHeader(http.StatusBadRequest)
 			w.Header().Add("Content-Type", "application/json")
 			w.Write([]byte(fmt.Sprintf(`{"message": "%s."}`, err)))
@@ -79,7 +79,7 @@ func (uc *UserController) AuthenticateUser(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	token, err := uc.authenticate.Execute(u.Email, u.Code, ctx)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("UserController(AuthenticateUser)", "error", err.Error())
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
@@ -110,7 +110,7 @@ func (uc *UserController) RequestAuthenticationCode(w http.ResponseWriter, r *ht
 	ctx := r.Context()
 	err := uc.requestAuthenticationCode.Execute(rac.Email, ctx)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("UserController(RequestAuthenticationCode)", "error", err.Error())
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}

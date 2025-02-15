@@ -21,13 +21,13 @@ func (am *Authentication) Execute(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		at, err := r.Cookie("access_token")
 		if err != nil {
-			slog.Error("error reading cookie access_token", err)
+			slog.Error("Middleware(Authentication)", "info", "error reading cookie access_token", "error", err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		userID, err := am.jh.VerifyJWT(strings.Split(at.Value, "Bearer ")[1])
 		if err != nil {
-			slog.Error("error verifying access_token", err)
+			slog.Error("Middleware(Authentication)", "info", "error verifying access_token", "error", err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

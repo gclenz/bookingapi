@@ -34,7 +34,7 @@ func (rr *RoomRepository) Create(room *room.Room, ctx context.Context) error {
 	)
 
 	if err != nil {
-		slog.Error("RoomRepository(Create) error:", err)
+		slog.Error("RoomRepository(Create)", "error", err)
 		return err
 	}
 
@@ -50,7 +50,7 @@ func (rr *RoomRepository) FindByID(roomID string, ctx context.Context) (*room.Ro
 	)
 	err := row.Err()
 	if err != nil {
-		slog.Error("RoomRepository(FindByID) error:", err)
+		slog.Error("RoomRepository(FindByID)", "error", err)
 		return nil, err
 	}
 
@@ -67,7 +67,7 @@ func (rr *RoomRepository) FindByID(roomID string, ctx context.Context) (*room.Ro
 		&room.UpdatedAt,
 	)
 	if err != nil {
-		slog.Error("RoomRepository(FindByID) error:", err)
+		slog.Error("RoomRepository(FindByID)", "error", err)
 		return nil, err
 	}
 
